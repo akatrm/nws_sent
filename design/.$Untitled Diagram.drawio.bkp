@@ -1,0 +1,107 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.0.3 Chrome/140.0.7339.249 Electron/38.7.0 Safari/537.36" version="29.0.3" pages="3">
+  <diagram name="web crawling" id="IcDDK4zkqWH1l1p22t-j">
+    <mxGraphModel dx="1241" dy="671" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="bZsAprRoxTPuc7sMrY_U-1" value="WWW" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="270" y="150" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="bZsAprRoxTPuc7sMrY_U-2" value="apache Solr" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="520" y="390" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="bZsAprRoxTPuc7sMrY_U-3" value="apache nutch" style="whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="286" y="380" width="100" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="bZsAprRoxTPuc7sMrY_U-4" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="bZsAprRoxTPuc7sMrY_U-3" target="bZsAprRoxTPuc7sMrY_U-2">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="840" y="550" as="sourcePoint" />
+            <mxPoint x="890" y="500" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bZsAprRoxTPuc7sMrY_U-5" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.55;entryY=0.95;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" source="bZsAprRoxTPuc7sMrY_U-3" target="bZsAprRoxTPuc7sMrY_U-1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="840" y="550" as="sourcePoint" />
+            <mxPoint x="360" y="340" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="bZsAprRoxTPuc7sMrY_U-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="bZsAprRoxTPuc7sMrY_U-7" target="bZsAprRoxTPuc7sMrY_U-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="bZsAprRoxTPuc7sMrY_U-7" value="Actor" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" vertex="1" parent="1">
+          <mxGeometry x="324" y="600" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="bZsAprRoxTPuc7sMrY_U-8" value="world wide web" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="390" y="175" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="bZsAprRoxTPuc7sMrY_U-9" value="2. scrape web pages" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="360" y="280" width="60" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="bZsAprRoxTPuc7sMrY_U-10" value="3. store news articles in Solr&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&amp;nbsp;&lt;/span&gt;" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="427" y="387" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="bZsAprRoxTPuc7sMrY_U-11" value="1. Run nutch to pull news articles" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="260" y="540" width="60" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="Training" id="FkZ4Y7ZK4ZybCc5ZGhQq">
+    <mxGraphModel dx="1117" dy="604" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="5Z3I-kC7zylRU1e9mNbD-0" />
+        <mxCell id="5Z3I-kC7zylRU1e9mNbD-1" parent="5Z3I-kC7zylRU1e9mNbD-0" />
+        <mxCell id="5Z3I-kC7zylRU1e9mNbD-3" value="apache Solr" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="5Z3I-kC7zylRU1e9mNbD-1">
+          <mxGeometry x="150" y="180" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="5Z3I-kC7zylRU1e9mNbD-7" value="Go middleware" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="5Z3I-kC7zylRU1e9mNbD-1">
+          <mxGeometry x="380" y="180" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="5Z3I-kC7zylRU1e9mNbD-8" value="Analytical Engine" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="5Z3I-kC7zylRU1e9mNbD-1">
+          <mxGeometry x="630" y="180" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="5Z3I-kC7zylRU1e9mNbD-9" value="Actor" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" vertex="1" parent="5Z3I-kC7zylRU1e9mNbD-1">
+          <mxGeometry x="430" y="420" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Ur8Yl5VTkaFcV_fg88oN-2" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="5Z3I-kC7zylRU1e9mNbD-1" source="5Z3I-kC7zylRU1e9mNbD-9">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="449" y="440" as="sourcePoint" />
+            <mxPoint x="444.909090909091" y="260" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Ur8Yl5VTkaFcV_fg88oN-3" value="1. configure middleware to read from solr instanc" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" vertex="1" parent="5Z3I-kC7zylRU1e9mNbD-1">
+          <mxGeometry x="470" y="340" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Ur8Yl5VTkaFcV_fg88oN-4" value="" style="endArrow=classic;html=1;rounded=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="5Z3I-kC7zylRU1e9mNbD-1" source="5Z3I-kC7zylRU1e9mNbD-7" target="5Z3I-kC7zylRU1e9mNbD-3">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="340" as="sourcePoint" />
+            <mxPoint x="450" y="290" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Ur8Yl5VTkaFcV_fg88oN-5" value="2. read news articles" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" vertex="1" parent="5Z3I-kC7zylRU1e9mNbD-1">
+          <mxGeometry x="290" y="160" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Ur8Yl5VTkaFcV_fg88oN-6" value="3. send news articles to analytical engine for training" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" vertex="1" parent="5Z3I-kC7zylRU1e9mNbD-1">
+          <mxGeometry x="540" y="140" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Ur8Yl5VTkaFcV_fg88oN-7" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="5Z3I-kC7zylRU1e9mNbD-1" source="5Z3I-kC7zylRU1e9mNbD-7" target="5Z3I-kC7zylRU1e9mNbD-8">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="440" y="220" as="sourcePoint" />
+            <mxPoint x="330" y="220" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="analysis" id="yRv9zswaLbs2bWicpOdP">
+    <mxGraphModel dx="1117" dy="604" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="bF43lPvck0AbUku-nXNW-0" />
+        <mxCell id="bF43lPvck0AbUku-nXNW-1" parent="bF43lPvck0AbUku-nXNW-0" />
+        <mxCell id="bF43lPvck0AbUku-nXNW-3" value="Analytical engine" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="bF43lPvck0AbUku-nXNW-1">
+          <mxGeometry x="320" y="170" width="120" height="80" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -139,10 +139,6 @@ def main():
         f1 = metric_f1.compute(predictions=preds, references=labels, average="weighted")
         return {"accuracy": acc["accuracy"], "f1": f1["f1"]}
 
-    # Direct initialization of TrainingArguments. Older/newer versions of
-    # transformers may have slightly different supported kwargs; here we
-    # directly pass the intended configuration. If this raises an error on
-    # your environment, upgrade transformers or adjust these fields.
     training_args = TrainingArguments(
         output_dir=args.output_dir,
         eval_strategy="epoch",
@@ -157,8 +153,6 @@ def main():
         fp16=False,
     )
 
-    # Use a data collator for dynamic padding instead of passing `tokenizer`
-    # directly to Trainer (deprecated in newer transformers versions).
     data_collator = DataCollatorWithPadding(tokenizer)
 
     trainer = Trainer(

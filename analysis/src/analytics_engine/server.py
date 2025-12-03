@@ -147,30 +147,37 @@ class ServerManager:
 # single global server manager used by route handlers
 _server_manager = ServerManager()
 
+
 @app.post("/stream/start")
 async def stream_start():
     return await _server_manager.start_trainer()
+
 
 @app.post("/stream/stop")
 async def stream_stop():
     return await _server_manager.stop_trainer()
 
+
 @app.get("/stream/status")
 async def stream_status():
     return {"running": _server_manager.is_running()}
+
 
 @app.post("/stream/train")
 async def stream_train(request: Request):
     return await _server_manager.ingest_stream(request)
 
+
 @app.post("/predict")
 async def predict(req: PredictRequest):
     return _server_manager.predict(req)
+
 
 @app.post('/predictor/start')
 async def predictor_load():
     """Initialize and cache a single Predictor from model_dir."""
     return _server_manager.start_predict()
+
 
 @app.post('/predictor/stop')
 async def predictor_unload():

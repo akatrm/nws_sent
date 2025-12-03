@@ -1,6 +1,5 @@
 import argparse
 from .predictor import Predictor
-import torch
 
 
 def parse_args():
@@ -28,10 +27,8 @@ def main():
         print("Provide --text or --file")
         return
     results = predict_texts(args.model_dir, texts)
-    for t, (pred, prob) in zip(texts, results):
-        print(f"TEXT: {t}")
-        print(f"PRED: {pred}  PROBS: {prob}")
-        print("-" * 40)
+    for r in results:
+        print(r)
 
 
 if __name__ == "__main__":

@@ -66,15 +66,15 @@ class StreamTrainer:
             logger.info("StreamTrainer stopped")
 
     async def enqueue_line(self, json: dict):
-        """Enqueue a single CSV line (text,label)."""
-        data: List[(str, str)] = []
+        """Enqueue a single JSON payload containing examples: {"examples": [{"text":...,"label":...}, ...]}"""
+        data: List[(str, int)] = []
         for l in json.get("examples", []):
-            data.append((l["text"],l["label"]))
+            data.append((l["text"], l["label"]))
 
         await self.queue.put(data)
 
     async def _consumer_loop(self):
-        buffer: List[(str, str)] = []
+        buffer: List[(str, int)] = []
         while self._running:
             try:
                 line = await asyncio.wait_for(self.queue.get(), timeout=1.0)
@@ -101,7 +101,7 @@ class StreamTrainer:
                 logger.exception("Error during final train step")
 
 
-    def _train_step(self, lines: List[(str, str)]):
+    def _train_step(self, lines: List[(str, int)]):
         if not lines:
             return
 

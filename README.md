@@ -1,108 +1,151 @@
-# Sentiment Analysis (Transformer fine-tune)
+# News articles Sentiment Analysis (Transformer fine-tune)
 
-This small project fine-tunes a pre-trained Transformer for sentiment analysis using Hugging Face Transformers and Datasets.
+This small project fine-tunes a pre-trained Transformer for news paper article sentiment analysis using Hugging Face Transformers and Datasets.
 
-Files:
-- `requirements.txt` - Python dependencies
-- `src/train.py` - Training script (fine-tune a model)
-- `src/predict.py` - Inference script
-- `data/sample.csv` - Small example dataset
 
-Quick start (macOS / zsh):
+Package layout
+--------------
+
+
+
+Build & install (recommended)
+-----------------------------
+
+We recommend using a virtual environment. From the project root:
 
 ```bash
-python3 -m venv .venv
+cd analysis
+python -m venv .venv
 source .venv/bin/activate
+pip install --upgrade pip setuptools wheel build
 pip install -r requirements.txt
 
-# Train on sample data
-python src/train.py --model distilbert-base-uncased --train_file data/sample.csv --validation_file data/sample.csv --output_dir outputs --epochs 1 --batch_size 8
+# (development) editable install so you can iterate without rebuilding
+pip install -e .
 
-# Predict
-python src/predict.py --model_dir outputs --text "I love this product!"
+# or to produce distributable artifacts (sdist + wheel):
+python -m build
+pip install dist/*.whl
 ```
 
-CSV format: header `text,label` where label is `0` (negative) or `1` (positive).
 
-Next steps / ideas:
-- Use a larger dataset (SST-2, IMDB)
-- Add evaluation & hyperparameter tuning
-- Export to ONNX or TorchScript for faster inference
-- Add FastAPI wrapper (a starter included in requirements)
+Run the FastAPI server
+----------------------
 
-API (FastAPI) usage
--------------------
-
-The project includes a FastAPI server at `src/server.py` exposing streaming training and prediction endpoints.
-
-Run the server (zsh):
+After the editable install (or wheel install), run the server with Uvicorn:
 
 ```bash
-# from project root
-uvicorn src.server:app --reload --host 0.0.0.0 --port 8000
+# using the installed package namespace
+uvicorn --app-dir analysis/src analytics_engine.server:app --reload --host 0.0.0.0 --port 8000
 ```
 
-zsh-friendly curl examples
+API endpoints (summary)
+-----------------------
 
-1) Start the stream trainer
+- `POST /stream/start` — start the StreamTrainer
+- `POST /stream/stop` — stop the StreamTrainer and save the model
+- `GET  /stream/status` — returns `{ "running": true|false }`
+- `POST /stream/train` — stream JSON payloads for incremental training
+- `POST /predictor/start` — load and cache a Predictor from `outputs/` or configured `model_dir`
+- `POST /predictor/stop` — unload the cached Predictor
+- `POST /predict` — run inference; body: `{ "text": "..." }` or `{ "texts": ["...","..."] }`
+
+Example (curl)
+---------------
+
+Start trainer:
 
 ```bash
-curl -X POST "http://127.0.0.1:8000/stream/start" \
-	-H "Accept: application/json"
+curl -X POST "http://127.0.0.1:8000/stream/start" -H "Accept: application/json"
 ```
 
-2) Stop the stream trainer
-
-```bash
-curl -X POST "http://127.0.0.1:8000/stream/stop" \
-	-H "Accept: application/json"
-```
-
-3) Stream training data (newline-delimited CSV lines). This endpoint accepts raw streamed bodies.
+Stream training data (use `--data-binary` to send newline CSV):
 
 ```bash
 curl -N -X POST "http://127.0.0.1:8000/stream/train" \
-	-H "Content-Type: text/plain" \
-	--data-binary $'text,label\n"I love this product!",1\n"This is terrible",0\n'
+  -H "Content-Type: text/plain" \
+  --data-binary $'text,label\n"I love this product!",1\n"This is terrible",0\n'
 ```
 
-4) Check stream status
+Start predictor and predict:
 
 ```bash
-curl -X GET "http://127.0.0.1:8000/stream/status" \
-	-H "Accept: application/json"
+curl -X POST "http://127.0.0.1:8000/predictor/start"
+curl -X POST "http://127.0.0.1:8000/predict" -H "Content-Type: application/json" -d '{"text":"I like it"}'
 ```
 
-5) Initialize/load the predictor
 
-```bash
-curl -X POST "http://127.0.0.1:8000/predictor/start" \
-	-H "Accept: application/json"
-```
+Middleware (Go) API
+--------------------
 
-6) Unload the predictor
+The `middleware/` service (written in Go) exposes HTTP endpoints to register Solr instances, submit jobs, and query or cancel job status. It acts as an orchestration layer and forwards work to the analytics engine (the Python FastAPI service) when appropriate.
 
-```bash
-curl -X POST "http://127.0.0.1:8000/predictor/stop" \
-	-H "Accept: application/json"
-```
+- `POST /register_solr` — register a Solr endpoint.
+  - Request JSON example:
+    ```json
+    {
+      "base_url": "http://solr-host:8983/solr",
+      "collection": "news_collection"
+    }
+    ```
+  - Response example:
+    ```json
+    { "status": "ok", "id": "solr-1" }
+    ```
 
-7) Make a prediction (single text)
+- `POST /submit_job` — submit a Solr job to be queued and processed.
+  - Request JSON example:
+    ```json
+    {
+      "job_id": "job-123",
+      "solr": { "base_url": "http://solr-host:8983/solr", "collection": "news_collection" },
+      "query": "title:climate",
+      "params": { "rows": 100 }
+    }
+    ```
+  - Response example:
+    ```json
+    { "status": "queued", "queue_id": "q-456" }
+    ```
 
-```bash
-curl -X POST "http://127.0.0.1:8000/predict" \
-	-H "Content-Type: application/json" \
-	-d '{"text":"I rarely use this product!"}'
-```
+- `GET /get_job_status` — query status for a job (some clients send JSON body containing `job_id`).
+  - Request JSON example:
+    ```json
+    { "job_id": "job-123" }
+    ```
+  - Response example:
+    ```json
+    { "job_id": "job-123", "status": "completed", "result": { "processed": 100 } }
+    ```
 
-8) Make a prediction (multiple texts)
+- `POST /cancel_job` — request cancellation of a queued/running job. Depending on implementation cancellation may be a no-op.
+  - Request JSON example:
+    ```json
+    { "job_id": "job-123" }
+    ```
+  - Response example (when not implemented):
+    ```json
+    { "status": "not_implemented" }
+    ```
 
-```bash
-curl -X POST "http://127.0.0.1:8000/predict" \
-	-H "Content-Type: application/json" \
-	-d '{"texts":["I love it!","Not what I expected."]}'
-```
+How middleware works
+------------------
 
-Notes
-- If the stream trainer is running, `/predict` returns HTTP 409 (training in progress). Stop the trainer to allow predictions.
-- The `/stream/train` endpoint expects raw newline-delimited CSV lines; use `--data-binary` to POST multiple lines with `curl`.
+- The middleware enqueues Solr jobs and, when processing, may call the analytics engine endpoints (for example `/stream/start`, `/stream/train`, `/stream/stop`) to perform streaming training or inference.
+- Use the middleware endpoints above to register Solr instances and enqueue jobs; monitor job lifecycle with `/get_job_status`.
+
+Design
+------
+
+The `design/diagrams.drawio` file contains architecture and sequence diagrams (streaming ingestion → StreamTrainer → ModelTrainer).
+
+extract data using apache nutch and store it in apache solr.
+
+![extract](design/diagrams-web%20crawling.png)
+
+Train the model 
+
+![train](design/diagrams-Training.png)
+
+using the model
+![modle](design/diagrams-analysis.png)

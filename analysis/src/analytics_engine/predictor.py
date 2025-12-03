@@ -1,6 +1,5 @@
 from typing import List, Optional
 import torch
-import numpy as np
 import logging
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 

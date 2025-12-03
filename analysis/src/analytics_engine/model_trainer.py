@@ -50,20 +50,26 @@ class ModelTrainer:
         self.loss_fn = nn.CrossEntropyLoss()
 
     def _parse_lines(self, lines: List[(str, str)]):
-        """Parse CSV lines into texts and labels.
-        """
         texts = []
         labels = []
-        for text, label in lines:
-            try:
-                label = int(label.strip())
-            except Exception:
+        for l in lines:
+            l = l.strip()
+            if not l:
                 continue
-            texts.append(text.strip)
-            labels.append(label)
+            if "," in l:
+                text, label = l.rsplit(",", 1)
+                text = text.strip().strip('"')
+                try:
+                    label = int(label.strip())
+                except Exception:
+                    continue
+                texts.append(text)
+                labels.append(label)
+            else:
+                continue
         return texts, labels
 
-    def train_batch(self, lines: List[(str, str)]) -> Optional[float]:
+    def train_batch(self, lines: List[str]):
         """Perform a training step on the provided CSV lines.
 
         Returns the loss value or None if no valid examples.
