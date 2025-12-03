@@ -1,0 +1,10 @@
+transformers>=4.30.0
+datasets>=2.14.0
+torch>=1.13.0
+scikit-learn
+tqdm
+pandas
+fastapi[all]==0.100.0
+uvicorn[standard]
+python-dotenv
+evaluate>=0.4.0
