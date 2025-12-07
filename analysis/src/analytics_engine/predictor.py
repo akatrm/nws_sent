@@ -1,3 +1,16 @@
+"""Inference utilities for the analytics engine.
+
+This module exposes a small `Predictor` class that wraps a
+Hugging Face tokenizer and sequence-classification model for batched
+inference. It is designed to be lightweight and to keep model loading
+concise for use from a long-running server process.
+
+Public API:
+- Predictor(model_dir, device=None): load a tokenizer+model from
+  `model_dir` and call `predict(texts)` to obtain label predictions and
+  probabilities.
+"""
+
 from typing import List, Optional
 import torch
 import logging

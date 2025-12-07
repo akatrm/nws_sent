@@ -1,3 +1,13 @@
+"""Small CLI wrapper for running predictions from a saved model.
+
+This module provides a very small command-line helper to load a
+`Predictor` from a `model_dir` and print predictions for either a
+single `--text` or a file with one text per line via `--file`.
+
+Example:
+    python -m analysis.src.analytics_engine.predict --model_dir ./outputs --text "I love this"
+"""
+
 import argparse
 from .predictor import Predictor
 

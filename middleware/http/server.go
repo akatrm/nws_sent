@@ -1,3 +1,8 @@
+// Package http implements an HTTP API server that exposes endpoints for
+// registering Solr servers, submitting jobs, and querying/cancelling
+// jobs. The server translates request payloads into internal Solr job
+// objects and pushes them onto the core queue for processing.
+
 package http
 
 import (
@@ -9,12 +14,16 @@ import (
 	"transform.com/m/solr"
 )
 
+// Manager holds middleware state: registered Solr instances, a job
+// manager, and the internal queue used for dispatching work.
 type Manager struct {
 	solr map[int]solr.Solr
 	j    *solr.SolrJobManager
 	q    *core.Queue
 }
 
+// GetManagerInstance constructs a Manager wired to the provided queue
+// and job manager.
 func GetManagerInstance(q *core.Queue, j *solr.SolrJobManager) *Manager {
 	return &Manager{
 		solr: make(map[int]solr.Solr),
@@ -23,6 +32,8 @@ func GetManagerInstance(q *core.Queue, j *solr.SolrJobManager) *Manager {
 	}
 }
 
+// StartHTTPServer registers handlers and starts the HTTP listener on
+// port 8080. Handlers are simple and return JSON responses.
 func (m Manager) StartHTTPServer() {
 	http.HandleFunc("/register_solr", m.RegisterSolr)
 	http.HandleFunc("/submit_job", m.SubmitJob)
@@ -35,6 +46,8 @@ func (m Manager) StartHTTPServer() {
 	}
 }
 
+// RegisterSolr accepts a Solr registration payload and stores the
+// configuration in the manager's map.
 func (m Manager) RegisterSolr(w http.ResponseWriter, r *http.Request) {
 
 	var response SolrRegisterResponse = SolrRegisterResponse{}
@@ -86,6 +99,8 @@ func (m Manager) RegisterSolr(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// SubmitJob accepts a job description, constructs a solr job and
+// enqueues it for processing.
 func (m Manager) SubmitJob(w http.ResponseWriter, r *http.Request) {
 
 	var response SolrJobRegisterResponse = SolrJobRegisterResponse{}
@@ -153,6 +168,8 @@ func (m Manager) SubmitJob(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// GetJobStatus accepts a job id in the request body and returns the
+// current status of the job.
 func (m Manager) GetJobStatus(w http.ResponseWriter, r *http.Request) {
 	var jobStatusRequest JobStatusRequest = JobStatusRequest{}
 	var jobStatusResponse JobStatusResponse = JobStatusResponse{}
@@ -204,9 +221,13 @@ func (m Manager) GetJobStatus(w http.ResponseWriter, r *http.Request) {
 	w.Write(data)
 }
 
+// CancelJob is the HTTP handler for job cancellation. The middleware
+// registers the handler but worker-level cancellation is a TODO in the
+// current implementation.
 func (m Manager) CancelJob(w http.ResponseWriter, r *http.Request) {
 }
 
+// GetError serializes an error message as JSON for HTTP responses.
 func GetError(message string) string {
 	errorResponse := HTTPError{Message: message}
 	data, _ := json.Marshal(errorResponse)

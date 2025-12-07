@@ -1,3 +1,18 @@
+"""FastAPI server and server manager for streaming training and prediction.
+
+This module exposes a small FastAPI `app` and a `ServerManager` helper
+that manages a single `StreamTrainer` (for streaming training ingestion)
+and a cached `Predictor` instance for serving model predictions. Routes
+are intentionally thin wrappers that validate minimal inputs and
+delegate to the manager.
+
+Public items:
+- `app`: FastAPI application with endpoints for stream ingestion and
+    prediction.
+- `ServerManager`: encapsulates server-side state and lifecycle
+    operations.
+"""
+
 from fastapi import FastAPI, Request, Form
 import logging
 from typing import Optional

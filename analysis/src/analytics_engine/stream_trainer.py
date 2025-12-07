@@ -1,3 +1,12 @@
+"""Streaming training utilities.
+
+This module implements `StreamTrainer`, a compact asynchronous consumer
+that accepts JSON payloads (lists of examples) and performs incremental
+training steps using `ModelTrainer`. It is not a full-featured
+replacement for batch training pipelines but is useful for demoing
+online/stream ingestion behavior.
+"""
+
 import asyncio
 import logging
 from typing import Optional, List
@@ -8,14 +17,14 @@ logger = logging.getLogger(__name__)
 
 
 class StreamTrainer:
-    """A minimal online trainer that consumes text,label CSV lines from an
-    async queue and performs incremental training steps.
+        """A minimal online trainer that consumes text,label CSV lines from an
+        async queue and performs incremental training steps.
 
-    Notes:
-    - This is intentionally simple and meant for streaming demos. It does
-      not replace a full Hugging Face `Trainer` for production.
-    - Input lines should be CSV rows: text,label (label integer)
-    """
+        Notes:
+        - This is intentionally simple and meant for streaming demos. It does
+            not replace a full Hugging Face `Trainer` for production.
+        - Input lines should be CSV rows: text,label (label integer)
+        """
 
     def __init__(self, 
         model_name: str = "distilbert-base-uncased", 

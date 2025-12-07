@@ -1,3 +1,6 @@
+// Package solr implements job orchestration logic for pulling data from
+// a Solr collection, converting documents into training payloads and
+// sending them to the analytics engine.
 package solr
 
 import (
@@ -11,24 +14,35 @@ import (
 	"transform.com/m/core"
 )
 
+// SolrJobStatus represents the lifecycle state of a Solr job.
 type SolrJobStatus int
 
 const (
+	// INIT indicates a job has been initialized but not yet started.
 	INIT SolrJobStatus = iota
+	// RUNNING indicates the job is actively pulling and sending data.
 	RUNNING
+	// COMPLETED indicates the job has finished successfully.
 	COMPLETED
+	// FAILED indicates the job terminated due to an error.
 	FAILED
+	// PENDING indicates a job is queued or awaiting execution.
 	PENDING
 )
 
+// String returns the textual representation of the status.
 func (s SolrJobStatus) String() string {
 	return [...]string{"INIT", "RUNNING", "COMPLETED", "FAILED", "PENDING"}[s]
 }
 
+// GetStatus returns the textual status (helper for external callers).
 func (s SolrJobStatus) GetStatus() string {
 	return s.String()
 }
 
+// SolrJob encapsulates a single job that pulls data from a SolrCore and
+// communicates with an analytics engine. It maintains internal state
+// such as the previous cursor mark and a WaitGroup used by workers.
 type SolrJob struct {
 	s              *Solr
 	j              *SolrCore
@@ -39,6 +53,8 @@ type SolrJob struct {
 	wg             *sync.WaitGroup
 }
 
+// GetSolrJob creates a new SolrJob connecting the provided SolrCore and
+// Solr instance. The returned job starts in the PENDING state.
 func GetSolrJob(j *SolrCore, s *Solr) *SolrJob {
 
 	si := &SolrJob{
@@ -52,14 +68,18 @@ func GetSolrJob(j *SolrCore, s *Solr) *SolrJob {
 	return si
 }
 
+// GetStatus returns the job's current status value.
 func (s SolrJob) GetStatus() SolrJobStatus {
 	return s.Status
 }
 
+// SetStatus updates the job status atomically.
 func (s *SolrJob) SetStatus(newStatus SolrJobStatus) {
 	s.Status = newStatus
 }
 
+// getSolrUrl builds a Solr select URL for the job using the provided
+// cursor mark and the job's collection/query settings.
 func (s SolrJob) getSolrUrl(cursorMark string) string {
 	solrBaseURL := fmt.Sprintf("http://%s:%s", s.s.Host, s.s.Port)
 	collection := s.j.Collection
@@ -80,11 +100,18 @@ func (s SolrJob) getSolrUrl(cursorMark string) string {
 	return solrURL
 }
 
+// getTargetURL returns the target analytics engine endpoint URL for a
+// given endpoint path. The function formats the URL from the SolrCore
+// host/port but is primarily used to contact the analytics HTTP
+// service.
 func (s SolrJob) getTargetURL(endpoint string) string {
 	targetURL := fmt.Sprintf("http://%s:%s", s.j.Host, s.j.Port, endpoint)
 	return targetURL
 }
 
+// Init prepares the job by ensuring the analytics engine is running.
+// If the analytics engine is not running it attempts to start it via
+// the `/stream/start` endpoint.
 func (s *SolrJob) Init() error {
 
 	// Initialize connection to analytics engine if needed
@@ -117,6 +144,9 @@ func (s *SolrJob) Init() error {
 	return nil
 }
 
+// Operation drives the job: it starts a pool of workers that pull
+// training batches from Solr and push them to the analytics engine.
+// The function blocks until the job completes or an error occurs.
 func (s SolrJob) Operation() error {
 
 	var trainData chan core.Training = make(chan core.Training)
@@ -177,6 +207,8 @@ func (s SolrJob) Operation() error {
 	return nil
 }
 
+// PullSolrData recursively pulls data from Solr using cursor-based
+// pagination. For each batch it invokes the provided callback `fn`.
 func (s SolrJob) PullSolrData(cursor string, fn SolrErrorFunction) error {
 	mark, traindata, err := s.solrPuller(cursor)
 
@@ -188,6 +220,9 @@ func (s SolrJob) PullSolrData(cursor string, fn SolrErrorFunction) error {
 	return err
 }
 
+// solrPuller performs a single Solr select query for the given
+// cursorMark and converts the returned documents into a
+// core.Training payload.
 func (s SolrJob) solrPuller(cursorMark string) (string, core.Training, error) {
 
 	var mark string
@@ -227,6 +262,8 @@ func (s SolrJob) solrPuller(cursorMark string) (string, core.Training, error) {
 	return newCursorMark, sampleData, nil
 }
 
+// trainEngineOperation sends a training payload to the analytics
+// engine's `/stream/train` endpoint and returns the result.
 func (s SolrJob) trainEngineOperation(data core.Training) (*core.Result, error) {
 
 	res := &core.Result{}

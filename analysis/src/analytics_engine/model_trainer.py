@@ -1,3 +1,16 @@
+"""Model trainer utilities.
+
+This module provides a small convenience wrapper around a Hugging Face
+tokenizer and sequence-classification model to support lightweight
+incremental training from CSV-style examples. It intentionally keeps the
+API small so it can be used from streaming components (see
+`StreamTrainer`) without pulling in heavyweight training scaffolding.
+
+Public classes:
+- ModelTrainer: load/prep model and run simple train steps on batches of
+    CSV text,label lines.
+"""
+
 import logging
 from typing import List, Optional
 from pathlib import Path
@@ -50,6 +63,11 @@ class ModelTrainer:
         self.loss_fn = nn.CrossEntropyLoss()
 
     def _parse_lines(self, lines: List[(str, str)]):
+        """Parse iterable CSV lines and return (texts, labels).
+
+        Each line should contain a text and an integer label separated by a
+        trailing comma. Lines that cannot be parsed are skipped.
+        """
         texts = []
         labels = []
         for l in lines:

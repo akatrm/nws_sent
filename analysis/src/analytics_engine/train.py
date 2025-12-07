@@ -1,3 +1,16 @@
+"""Train a pretrained transformer model for sentiment classification.
+
+This script is a convenience entrypoint that fine-tunes a
+Hugging Face transformer for binary/multi-class sentiment tasks. It
+supports loading CSV training files (via `datasets` or a local pandas
+fallback), tokenizes examples, and runs `transformers.Trainer` with a
+standard set of training arguments.
+
+This file is intended as a cli/utility rather than an importable
+library; for programmatic training prefer directly constructing a
+`Trainer` with the provided preprocessing steps.
+"""
+
 import argparse
 import logging
 from datasets import load_dataset

@@ -1,8 +1,11 @@
+# Dockerfile for setting up Apache Nutch with specific version and dependencies
+# for now use debian trixie slim as base image
 FROM public.ecr.aws/docker/library/debian:trixie-slim
 LABEL maintainer="https://github.com/akatrm"
 
-ENV SOLR_VERSION=1.21
-ENV SOLR_HOME=/var/solr/data
+# tied to nutch 1.21 for compatibility with existing setup
+ENV NUTCH_VERSION=1.21
+ENV NUTCH_HOME=/var/solr/data
 
 RUN apt update \
     && apt install -y curl openjdk-21-jre-headless procps

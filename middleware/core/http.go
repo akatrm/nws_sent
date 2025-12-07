@@ -1,3 +1,9 @@
+// Package core provides a small HTTP helper used by Solr job workers
+// to POST and GET JSON payloads to downstream services (for example
+// the analytics engine). These functions are intentionally simple and
+// synchronous; consider using a more robust HTTP client for production
+// with retries and streaming support.
+// TODO: add timeout handling, retries and context support
 package core
 
 import (
@@ -6,11 +12,16 @@ import (
 	"net/http"
 )
 
+// Result is a small wrapper for HTTP responses produced by
+// PostRequest. It includes the returned status code and raw data.
 type Result struct {
 	Data   []byte
 	Status int
 }
 
+// PostRequest performs a simple HTTP POST with a JSON content type.
+// It returns a Result containing the response status and body or an
+// error if the request or body read fails.
 func PostRequest(url string, data []byte) (*Result, error) {
 	res := &Result{}
 
@@ -40,6 +51,8 @@ func PostRequest(url string, data []byte) (*Result, error) {
 	return res, nil
 }
 
+// GetRequest performs a simple HTTP GET and returns the response body
+// or an error. The helper currently reads the full body into memory.
 func GetRequest(url string) ([]byte, error) {
 	var respData []byte
 
